@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Net;
 using Unity.Networking.Transport;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ public class Client : MonoBehaviour
 
 
     // Methods
-    private void Init(string ip, ushort port)
+    public void Init(string ip, ushort port)
     {
         driver = NetworkDriver.Create();
         NetworkEndPoint endpoint = NetworkEndPoint.Parse(ip, port);
@@ -33,11 +34,11 @@ public class Client : MonoBehaviour
         connections = driver.Connect(endpoint);
         Debug.Log("Attemping to connect to the server on " + endpoint.Address);
         isActive = true;
-        //RegisterToEvent();
+        RegisterToEvent();
     }
     public void ShutDown()
     {
-        //UnRegisterToEvent();
+            UnRegisterToEvent();
 
         driver.Dispose();
         isActive = false;
@@ -86,26 +87,43 @@ public class Client : MonoBehaviour
             if (cmd == NetworkEvent.Type.Connect)
             {
                 //SentToServer(new Netwelcome());
+                Debug.Log("Connected to the server");
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
-                //NetUtility.Ondata(stream, default(NetworkConnection));
+                NetUtility.Ondata(stream, default(NetworkConnection));
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
                 Debug.Log("Client got disconnected form server");
                 connections = default(NetworkConnection);
                 connectionDropped?.Invoke();
-                ShutDown()l 
+                ShutDown(); 
             }
         }
 
     }
-    public void sendToServer(NetworkConnection msg)
+    public void sendToServer(NetMessage msg)
     {
         DataStreamWriter writer;
         driver.BeginSend(connections, out writer);
-        msg.Serialize(ref writer);
-        driver.EndSend(writer)
+       msg.Serialize(ref writer);
+        driver.EndSend(writer);
+    }
+
+    public void RegisterToEvent()
+    {
+       NetUtility.C_KEEP_ALIVE += OnKeepAlive;
+    }
+
+    public void UnRegisterToEvent()
+    {
+       NetUtility.C_KEEP_ALIVE -= OnKeepAlive;
+    }
+
+    private void OnKeepAlive(NetMessage nm)
+    {
+        sendToServer(nm);
+        Debug.Log("Client received keep alive");
     }
 }

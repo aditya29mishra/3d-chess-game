@@ -351,7 +351,9 @@
 "Assets/Scripts/ChessBoard.cs"
 "Assets/Scripts/GameUI.cs"
 "Assets/Scripts/Net/Client.cs"
+"Assets/Scripts/Net/NetMessage/NetKeepAlive.cs"
 "Assets/Scripts/Net/NetMessage/NetMessage.cs"
+"Assets/Scripts/Net/NetUtilty.cs"
 "Assets/Scripts/Net/Server.cs"
 -langversion:8.0
 

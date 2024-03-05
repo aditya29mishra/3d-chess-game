@@ -71,6 +71,8 @@
     <Compile Include="Assets\Scripts\GameUI.cs" />
     <Compile Include="Assets\Scripts\Net\NetMessage\NetMessage.cs" />
     <Compile Include="Assets\Scripts\Chess Pieces\ChessPieces.cs" />
+    <Compile Include="Assets\Scripts\Net\NetUtilty.cs" />
+    <Compile Include="Assets\Scripts\Net\NetMessage\NetKeepAlive.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

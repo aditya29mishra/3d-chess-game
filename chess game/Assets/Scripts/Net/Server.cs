@@ -24,7 +24,7 @@ public class Server : MonoBehaviour
 
     private Action connectionDropped;
     // Methods
-    private void Init(ushort port)
+    public void Init(ushort port)
     {
         driver = NetworkDriver.Create();
         NetworkEndPoint endpoint = NetworkEndPoint.AnyIpv4;
@@ -62,7 +62,7 @@ public class Server : MonoBehaviour
             return;
         }
         
-        //keepAlive();
+        keepAlive();
 
         driver.ScheduleUpdate().Complete();
 
@@ -75,6 +75,16 @@ public class Server : MonoBehaviour
         // Update existing connections
         UpdateConnections();
     }
+
+    private void keepAlive()
+    {
+        if (Time.time - lastKeepAlive > keepAliveTickRate)
+        {
+            lastKeepAlive = Time.time;
+            Broadcast(new NetKeepAlive());
+        }
+    }
+
     private void CleanUpConnections()
     {
         for (int i = 0; i < connections.Length; i++)
@@ -106,7 +116,7 @@ public class Server : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
-                  //  NetUtility.OnData(stream, connections[i], this);
+                  //NetUtility.OnData(stream, connections[i], this);
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
@@ -124,7 +134,7 @@ public class Server : MonoBehaviour
     {
         DataStreamWriter writer;
         driver.BeginSend (Connection, out writer);
-       // msg.Serialize(ref writer);
+        msg.Serialize(ref writer);
         driver.EndSend(writer);
     }
     public void Broadcast(NetMessage msg)
@@ -138,5 +148,7 @@ public class Server : MonoBehaviour
             }
         }
     }
+
+
 
 }
