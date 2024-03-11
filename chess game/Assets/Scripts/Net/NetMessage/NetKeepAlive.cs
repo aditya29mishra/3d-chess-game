@@ -1,23 +1,23 @@
-using Assets.Scripts.Net;
 using Unity.Networking.Transport;
+
 public class NetKeepAlive : NetMessage
 {
     public NetKeepAlive()
     {
-        code = OpCode.KEEP_ALIVE;
+        Code = OpCode.KEEP_ALIVE;
     }
     public NetKeepAlive(DataStreamReader reader)
     {
-        code = OpCode.KEEP_ALIVE;
-        Deserialize(ref reader);
+        Code = OpCode.KEEP_ALIVE;
+        Deserialize(reader);
     }
 
     public override void Serialize(ref DataStreamWriter writer)
     {
-        writer.WriteByte((byte)code);
+        writer.WriteByte((byte)Code);
     }
 
-    public override void Deserialize(ref DataStreamReader reader)
+    public override void Deserialize( DataStreamReader reader)
     {
         
     }

@@ -313,7 +313,8 @@
 "Assets/Scripts/Net/Client.cs"
 "Assets/Scripts/Net/NetMessage/NetKeepAlive.cs"
 "Assets/Scripts/Net/NetMessage/NetMessage.cs"
-"Assets/Scripts/Net/NetUtilty.cs"
+"Assets/Scripts/Net/NetMessage/NetWelcome.cs"
+"Assets/Scripts/Net/NetUtility.cs"
 "Assets/Scripts/Net/Server.cs"
 -langversion:8.0
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Networking.Transport;
 using UnityEngine;
 
 public enum SpecialMove
@@ -41,13 +42,21 @@ public class ChessBoard : MonoBehaviour
     private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
     private bool isWhiteTurn;
     private SpecialMove specialMove;
+    // multiplayer logic;
+    private int playercount = -1;
+    private int currentTeam = -1;
+
     private void Awake()
     {
         isWhiteTurn = true;
         GenrateALLTiles(tileSize, TILE_COUNT_X, TILE_COUNT_Y);
         SpawnAllPiece();
         PositionAllPieces();
+
+        RegisterEvents();
     }
+
+
     private void Update()
     {
         if (!currentCamera)
@@ -562,7 +571,7 @@ public class ChessBoard : MonoBehaviour
                     if (chessPieces[x, y].team == targetTeam)
                     {
                         defendingPieces.Add(chessPieces[x, y]);
-                        if(chessPieces[x,y].type == ChessPieceType.King)
+                        if (chessPieces[x, y].type == ChessPieceType.King)
                         {
                             tagetKing = chessPieces[x, y];
                         }
@@ -590,7 +599,7 @@ public class ChessBoard : MonoBehaviour
             }
         }
         // Are we in check now ?
-        if(CantainValidMove(ref currentAvilableMoves , new Vector2Int(tagetKing.currentX, tagetKing.currentY)))
+        if (CantainValidMove(ref currentAvilableMoves, new Vector2Int(tagetKing.currentX, tagetKing.currentY)))
         {
             // king is under attack ? , can we move ? 
 
@@ -600,7 +609,7 @@ public class ChessBoard : MonoBehaviour
                 // Since we are sending the ref aviavle move , we will delete the moves that we putting us in check 
                 SimilateMoveForSinglePiece(defendingPieces[i], ref defendingMoves, tagetKing);
 
-                if(defendingMoves.Count != 0)
+                if (defendingMoves.Count != 0)
                 {
                     return false;
                 }
@@ -705,4 +714,46 @@ public class ChessBoard : MonoBehaviour
         }
         return -Vector2Int.one;
     }
+
+    #region
+    private void RegisterEvents()
+    {
+        Debug.Log("RegisterEvents method is called.");
+        NetUtility.C_WELCOME += OnWelcomeClient;
+        NetUtility.S_WELCOME += OnWelcomeServer;
+    }
+
+
+    private void UnRegisterEvents()
+    {
+
+    }
+    // server
+    private void OnWelcomeServer(NetMessage msg, NetworkConnection cnn) 
+    {
+        Debug.Log("OnWelcomeServer method is called.");
+
+        // Client has  connected , assings  a team  and  return  the message  back to him
+        NetWelcome nw = msg as NetWelcome;
+        //assinged a team
+        nw.AssingedTeam = ++playercount;
+        // return back to clint 
+        Server.Instance.SendToClient(cnn, nw);
+    }
+    //client
+    private void OnWelcomeClient(NetMessage msg)
+    {
+        Debug.Log("OnWelcomeClient method is called.");
+        // recive the connection message 
+        NetWelcome nw = msg as NetWelcome;
+
+        //assing the team ;
+        currentTeam = nw.AssingedTeam;
+
+        Debug.Log($"my assingned team is {nw.AssingedTeam}");
+    }
+
+
+
+    #endregion
 }

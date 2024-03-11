@@ -1,0 +1,53 @@
+using UnityEngine;
+using Unity.Networking.Transport;
+using System;
+
+
+public static class NetUtility
+{
+    public static void Ondata(DataStreamReader stream, NetworkConnection cnn, Server server = null)
+    {
+        NetMessage msg = null;
+        var opCode = (OpCode)stream.ReadByte();
+        switch (opCode)
+        {
+            case OpCode.KEEP_ALIVE:
+                msg = new NetKeepAlive(stream);
+                break;
+            case OpCode.WELCOME:
+                msg = new NetWelcome(stream);
+                break;
+            case OpCode.START_GAME:
+                //msg = new NetStartGame(stream);
+                break;
+            case OpCode.MAKE_MOVE:
+                //msg = new NetMakeMove(stream);
+                break;
+            case OpCode.REMATCH:
+                //msg = new NetRematch(stream);
+                break;
+            default:
+                Debug.Log("Unkown message received");
+                break;
+        }
+
+        if (server != null)
+        {
+            msg.ReceivedOnServer(cnn);
+        }
+        else
+        {
+            msg.ReceivedOnClient();
+        }
+    }
+    public static Action<NetMessage> C_KEEP_ALIVE;
+    public static Action<NetMessage> C_WELCOME;
+    public static Action<NetMessage> C_START_GAME;
+    public static Action<NetMessage> C_MAKE_MOVE;
+    public static Action<NetMessage> C_REMATCH;
+    public static Action<NetMessage, NetworkConnection> S_KEEP_ALIVE;
+    public static Action<NetMessage, NetworkConnection> S_WELCOME;
+    public static Action<NetMessage, NetworkConnection> S_START_GAME;
+    public static Action<NetMessage, NetworkConnection> S_MAKE_MOVE;
+    public static Action<NetMessage, NetworkConnection> S_REMATCH;
+}
