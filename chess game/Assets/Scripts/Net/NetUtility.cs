@@ -2,6 +2,14 @@ using UnityEngine;
 using Unity.Networking.Transport;
 using System;
 
+public enum OpCode
+{
+    KEEP_ALIVE = 1,
+    WELCOME = 2,
+    START_GAME = 3,
+    MAKE_MOVE = 4,
+    REMATCH = 5
+}
 
 public static class NetUtility
 {
@@ -9,27 +17,25 @@ public static class NetUtility
     {
         NetMessage msg = null;
         var opCode = (OpCode)stream.ReadByte();
+         Debug.Log($"Received OpCode: {opCode}"); // Log the received OpCode
         switch (opCode)
         {
             case OpCode.KEEP_ALIVE:
-                msg = new NetKeepAlive(stream);
+                msg = new NetKeepAlive(stream); 
                 break;
-            case OpCode.WELCOME:
+            case OpCode.WELCOME: 
                 msg = new NetWelcome(stream);
-                break;
-            case OpCode.START_GAME:
-                //msg = new NetStartGame(stream);
-                break;
-            case OpCode.MAKE_MOVE:
-                //msg = new NetMakeMove(stream);
-                break;
-            case OpCode.REMATCH:
-                //msg = new NetRematch(stream);
-                break;
+                break; 
+            case OpCode.START_GAME: 
+                msg = new NetStartGame(stream);   break;
+            case OpCode.MAKE_MOVE:msg = new NetMakeMove(stream);break;
+            case OpCode.REMATCH: 
+            msg = new NetRematch(stream);
+            break;
             default:
                 Debug.Log("Unkown message received");
                 break;
-        }
+        };
 
         if (server != null)
         {

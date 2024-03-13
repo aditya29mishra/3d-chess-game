@@ -116,11 +116,11 @@ public class Server : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
-                  //NetUtility.OnData(stream, connections[i], this);
+                  NetUtility.Ondata(stream, connections[i], this);
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
                 {
-                    Debug.Log("client disconnected from server");
+                    Debug.Log( "client disconnected from server");
                     connections[i] = default(NetworkConnection);
                     connectionDropped?.Invoke();
                     ShutDown(); // as its 2 person game, we can just shut down the server
